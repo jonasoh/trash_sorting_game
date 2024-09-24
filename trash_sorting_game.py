@@ -17,6 +17,8 @@ substrates = {
         'image': [
             pygame.image.load('substrates/banana1.png'),
             pygame.image.load('substrates/banana2.png'),
+            pygame.image.load('substrates/banana3.png'),
+            pygame.image.load('substrates/banana4.png'),
         ],
         'biogas': 50,
         'digestate': 150,
@@ -25,6 +27,8 @@ substrates = {
         'image': [
             pygame.image.load('substrates/fish1.png'),
             pygame.image.load('substrates/fish2.png'),
+            pygame.image.load('substrates/fish3.png'),
+            pygame.image.load('substrates/fish4.png'),
         ],
         'biogas': 120,
         'digestate': 20,
