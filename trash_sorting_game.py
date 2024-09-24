@@ -14,25 +14,25 @@ bus_speed_per_frame = 5
 
 substrates = {
     pygame.K_a: {
-        "image": [
-            pygame.image.load("substrates/banana1.png"),
-            pygame.image.load("substrates/banana2.png"),
+        'image': [
+            pygame.image.load('substrates/banana1.png'),
+            pygame.image.load('substrates/banana2.png'),
         ],
-        "biogas": 50,
-        "digestate": 150,
+        'biogas': 50,
+        'digestate': 150,
     },
     pygame.K_s: {
-        "image": [
-            pygame.image.load("substrates/fish1.png"),
-            pygame.image.load("substrates/fish2.png"),
+        'image': [
+            pygame.image.load('substrates/fish1.png'),
+            pygame.image.load('substrates/fish2.png'),
         ],
-        "biogas": 120,
-        "digestate": 20,
+        'biogas': 120,
+        'digestate': 20,
     },
 }
 
 bus_keys = {pygame.K_1: 0, pygame.K_2: 1, pygame.K_3: 2, pygame.K_4: 3}
-scores = {x: {"biogas": 0, "digestate": 0} for x in range(4)}
+scores = {x: {'biogas': 0, 'digestate': 0} for x in range(4)}
 
 
 class Bus(pygame.sprite.Sprite):
@@ -157,10 +157,10 @@ def splat():
 
 def draw_scores():
     for i in range(4):
-        d_score_surface = font_scores.render(str(scores[i]["digestate"]), True, white)
+        d_score_surface = font_scores.render(str(scores[i]['digestate']), True, white)
         d_score_rect = d_score_surface.get_rect(center=(flower_x_positions[i], 700))
 
-        b_score_surface = font_scores.render(str(scores[i]["biogas"]), True, white)
+        b_score_surface = font_scores.render(str(scores[i]['biogas']), True, white)
 
         screen.blit(d_score_surface, d_score_rect)
         screen.blit(b_score_surface, (1100, lane_y_positions[i] - 55))
@@ -172,7 +172,7 @@ def reset():
         bus.reset()
     for flower in flowers:
         flower.reset()
-    scores = {x: {"biogas": 0, "digestate": 0} for x in range(4)}
+    scores = {x: {'biogas': 0, 'digestate': 0} for x in range(4)}
 
 
 # initialize pygame
@@ -181,15 +181,15 @@ random.seed()
 
 # create screen
 screen = pygame.display.set_mode((screen_width, screen_height))
-pygame.display.set_caption("Biogasspelet")
+pygame.display.set_caption('Biogasspelet')
 pygame.mixer.init()
 
 # bus sprites
 bus_images = []
 sel_images = []
 for i in range(4):
-    bus_images.append(pygame.image.load(f"sprites/bus{i+1}.png"))
-    sel_images.append(pygame.image.load(f"sprites/bus{i+1}_sel.png"))
+    bus_images.append(pygame.image.load(f'sprites/bus{i+1}.png'))
+    sel_images.append(pygame.image.load(f'sprites/bus{i+1}_sel.png'))
 
 buses = [Bus(bus_images[i], 30, lane_y_positions[i], sel_images[i]) for i in range(4)]
 current_bus = 0  # initially, bus in lane 1 (index 0) is selected
@@ -197,10 +197,10 @@ all_buses = pygame.sprite.Group(buses)
 
 # flower sprites
 flower_images = [
-    pygame.image.load("sprites/flower1.png"),
-    pygame.image.load("sprites/flower1.png"),
-    pygame.image.load("sprites/flower1.png"),
-    pygame.image.load("sprites/flower1.png"),
+    pygame.image.load('sprites/flower1.png'),
+    pygame.image.load('sprites/flower1.png'),
+    pygame.image.load('sprites/flower1.png'),
+    pygame.image.load('sprites/flower1.png'),
 ]
 
 flowers = [Flower(flower_images[i], flower_x_positions[i], 700) for i in range(4)]
@@ -211,13 +211,13 @@ trash_group = pygame.sprite.Group()
 
 # sound files
 sounds = [
-    pygame.mixer.Sound(os.path.join("sounds", file))
-    for file in os.listdir("sounds")
-    if file.endswith(".wav")
+    pygame.mixer.Sound(os.path.join('sounds', file))
+    for file in os.listdir('sounds')
+    if file.endswith('.wav')
 ]
 
-font_large = pygame.font.SysFont("Arial", 180)  # large font for display
-font_scores = pygame.font.SysFont("Arial", 48)
+font_large = pygame.font.SysFont('Arial', 180)  # large font for display
+font_scores = pygame.font.SysFont('Arial', 48)
 
 # selected bus display timer
 selected_display_time = 2  # display time in seconds
@@ -251,17 +251,17 @@ while running:
             elif event.key in substrates:
                 d = substrates[event.key]
                 trash = RotatingScalingSprite(
-                    random.choice(d["image"]),
+                    random.choice(d['image']),
                     x=random.randint(0.15 * screen_width, 0.85 * screen_width),
                     y=random.randint(0.15 * screen_height, 0.85 * screen_height),
                     duration=2.0,
                 )
                 trash_group.add(trash)
                 splat()
-                buses[current_bus].move(d["biogas"])
-                scores[current_bus]["biogas"] += d["biogas"]
-                scores[current_bus]["digestate"] += d["digestate"]
-                flowers[current_bus].grow(d["digestate"] / 1000)
+                buses[current_bus].move(d['biogas'])
+                scores[current_bus]['biogas'] += d['biogas']
+                scores[current_bus]['digestate'] += d['digestate']
+                flowers[current_bus].grow(d['digestate'] / 1000)
             elif event.key == pygame.K_ESCAPE:
                 running = False
             elif event.key == pygame.K_f and pygame.key.get_mods() & pygame.KMOD_CTRL:
