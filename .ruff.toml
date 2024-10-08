@@ -2,4 +2,4 @@
 quote-style = 'single'
 
 [lint]
-ignore = ['E261', 'E701', 'E702']
+ignore = ['E261', 'E501', 'E701', 'E702']
