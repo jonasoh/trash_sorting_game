@@ -12,29 +12,121 @@ grey = (169, 169, 169)
 white = (255, 255, 255)
 bus_speed_per_frame = 5
 
+
+def ls(x):
+    return pygame.image.load('substrates/' + x)
+
+
 substrates = {
+    # substrates are classified by the amount of biogas they generate (measured as the
+    # number of meters a bus will travel on one kg of substrate), and how good digestate they generate
+    # (how much nitrogen is in one kg of the substrate)
     pygame.K_a: {
         'image': [
-            pygame.image.load('substrates/banana1.png'),
-            pygame.image.load('substrates/banana2.png'),
-            pygame.image.load('substrates/banana3.png'),
-            pygame.image.load('substrates/banana4.png'),
+            ls('banana1.png'),
+            ls('banana2.png'),
+            ls('banana3.png'),
+            ls('banana4.png'),
         ],
-        'biogas': 50,
-        'digestate': 150,
-    },
-    pygame.K_s: {
-        'image': [
-            pygame.image.load('substrates/fish1.png'),
-            pygame.image.load('substrates/fish2.png'),
-            pygame.image.load('substrates/fish3.png'),
-            pygame.image.load('substrates/fish4.png'),
-        ],
-        'biogas': 120,
+        'biogas': 1810,
         'digestate': 20,
+    },
+    pygame.K_b: {
+        'image': [
+            ls('fish1.png'),
+            ls('fish2.png'),
+            ls('fish3.png'),
+            ls('fish4.png'),
+        ],
+        'biogas': 18900,
+        'digestate': 220,
+    },
+    pygame.K_c: {
+        'image': [
+            ls('eggshells1.png'),
+            ls('eggshells2.png'),
+        ],
+        'biogas': 0,
+        'digestate': 0,
+    },
+    pygame.K_d: {
+        'image': [
+            ls('candy1.png'),
+            ls('candy2.png'),
+        ],
+        'biogas': 7250,
+        'digestate': 0,
+    },
+    pygame.K_e: {
+        'image': [
+            ls('bread1.png'),
+            ls('bread2.png'),
+            ls('bread3.png'),
+            ls('bread4.png'),
+        ],
+        'biogas': 8700,
+        'digestate': 100,
+    },
+    pygame.K_f: {
+        'image': [ls('applecore1.png'), ls('applecore2.png')],
+        'biogas': 1800,
+        'digestate': 20,
+    },
+    pygame.K_g: {
+        'image': [ls('peels1.png'), ls('peels2.png')],
+        'biogas': 2180,
+        'digestate': 20,
+    },
+    pygame.K_h: {
+        'image': [ls('bones1.png')],
+        'biogas': 0,
+        'digestate': 0,
+    },
+    pygame.K_i: {
+        'image': [ls('coffeegrounds1.png')],
+        'biogas': 4060,
+        'digestate': 10,
+    },
+    pygame.K_j: {
+        'image': [ls('yogurt1.png')],
+        'biogas': 1930,
+        'digestate': 40,
+    },
+    pygame.K_k: {
+        'image': [ls('dirt1.png')],
+        'biogas': 0,
+        'digestate': 0,
+    },
+    pygame.K_l: {'image': [ls('flowers1.png')], 'biogas': 6040, 'digestate': 70},
+    pygame.K_m: {'image': [ls('plastic1.png')], 'biogas': 0, 'digestate': 0},
+    pygame.K_n: {'image': [ls('oil1.png')], 'biogas': 32940, 'digestate': 0},
+    # räkskal
+    pygame.K_p: {
+        'image': [ls('paper1.png'), ls('paper2.png')],
+        'biogas': 7400,
+        'digestate': 0,
+    },
+    pygame.K_q: {'image': [ls('cutlery1.png')], 'biogas': 0, 'digestate': 0},
+    pygame.K_r: {'image': [ls('pasta1.png')], 'biogas': 5080, 'digestate': 70},
+    pygame.K_s: {
+        'image': [ls('cheese1.png'), ls('cheese2.png')],
+        'biogas': 9670,
+        'digestate': 250,
+    },
+    pygame.K_t: {
+        'image': [
+            ls('meatballs1.png'),
+            ls('meatballs2.png'),
+            ls('meatballs3.png'),
+            ls('meatballs4.png'),
+        ],
+        'biogas': 12090,
+        'digestate': 210,
     },
 }
 
+km_per_pixel = sum(x['biogas'] for x in substrates.values()) / 1100
+print(km_per_pixel)
 bus_keys = {pygame.K_1: 0, pygame.K_2: 1, pygame.K_3: 2, pygame.K_4: 3}
 scores = {x: {'biogas': 0, 'digestate': 0} for x in range(4)}
 
@@ -42,8 +134,8 @@ scores = {x: {'biogas': 0, 'digestate': 0} for x in range(4)}
 class Bus(pygame.sprite.Sprite):
     def __init__(self, image, x, y, sel_image):
         super().__init__()
-        self.orig_image = pygame.transform.scale(image, (50, 30))  # scale bus images
-        self.selected_image = pygame.transform.scale(sel_image, (50, 30))
+        self.orig_image = image
+        self.selected_image = sel_image
         self.image = self.orig_image
         self.rect = self.image.get_rect()
         self.rect.x = x
@@ -53,10 +145,11 @@ class Bus(pygame.sprite.Sprite):
         self.selected = False
 
     def move(self, distance):
+        print('moving to', self.target_x)
         self.target_x += distance
         # Calculate the movement per frame based on a fixed speed, considering the direction
         self.movement_per_frame = (
-            bus_speed_per_frame if distance > 0 else -bus_speed_per_frame
+            bus_speed_per_frame if distance >= 0 else -bus_speed_per_frame
         )
 
     def reset(self):
@@ -189,13 +282,10 @@ pygame.display.set_caption('Biogasspelet')
 pygame.mixer.init()
 
 # bus sprites
-bus_images = []
-sel_images = []
-for i in range(4):
-    bus_images.append(pygame.image.load(f'sprites/bus{i+1}.png'))
-    sel_images.append(pygame.image.load(f'sprites/bus{i+1}_sel.png'))
+bus_image = pygame.image.load('sprites/bus.png')
+sel_image = pygame.image.load('sprites/bus_sel.png')
 
-buses = [Bus(bus_images[i], 30, lane_y_positions[i], sel_images[i]) for i in range(4)]
+buses = [Bus(bus_image, 30, lane_y_positions[i], sel_image) for i in range(4)]
 current_bus = 0  # initially, bus in lane 1 (index 0) is selected
 all_buses = pygame.sprite.Group(buses)
 
@@ -262,7 +352,7 @@ while running:
                 )
                 trash_group.add(trash)
                 splat()
-                buses[current_bus].move(d['biogas'])
+                buses[current_bus].move(int(d['biogas'] / km_per_pixel))
                 scores[current_bus]['biogas'] += d['biogas']
                 scores[current_bus]['digestate'] += d['digestate']
                 flowers[current_bus].grow(d['digestate'] / 1000)
