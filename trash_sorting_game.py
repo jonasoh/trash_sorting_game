@@ -276,7 +276,9 @@ pygame.init()
 random.seed()
 
 # create screen
-screen = pygame.display.set_mode((screen_width, screen_height))
+screen = pygame.display.set_mode(
+    (screen_width, screen_height), pygame.FULLSCREEN | pygame.SCALED
+)
 pygame.display.set_caption('Biogasspelet')
 pygame.mixer.init()
 
