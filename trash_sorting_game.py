@@ -307,6 +307,7 @@ sounds = [
     pygame.mixer.Sound(os.path.join('sounds', file))
     for file in os.listdir('sounds')
     if file.endswith('.wav')
+    and not os.path.basename(file).startswith('._')  # macos idiot files
 ]
 
 font_large = pygame.font.SysFont('Arial', 180)  # large font for display
@@ -349,8 +350,12 @@ while running:
                 d = substrates[event.key]
                 trash = RotatingScalingSprite(
                     random.choice(d['image']),
-                    x=random.randint(0.15 * screen_width, 0.85 * screen_width),
-                    y=random.randint(0.15 * screen_height, 0.85 * screen_height),
+                    x=random.randint(
+                        int(0.15 * screen_width), int(0.85 * screen_width)
+                    ),
+                    y=random.randint(
+                        int(0.15 * screen_height), int(0.85 * screen_height)
+                    ),
                     duration=2.0,
                 )
                 trash_group.add(trash)
