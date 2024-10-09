@@ -285,7 +285,7 @@ bus_image = pygame.image.load('sprites/bus.png')
 sel_image = pygame.image.load('sprites/bus_sel.png')
 
 buses = [Bus(bus_image, 30, lane_y_positions[i], sel_image) for i in range(4)]
-current_bus = 0  # initially, bus in lane 1 (index 0) is selected
+current_bus = -1  # initially, no bus is selected
 all_buses = pygame.sprite.Group(buses)
 
 # flower sprites
@@ -345,7 +345,7 @@ while running:
                 current_bus = bus_keys[event.key]
                 selection_start_time = time.time()
                 selection_displaying = True
-            elif event.key in substrates:
+            elif event.key in substrates and current_bus >= 0:
                 d = substrates[event.key]
                 trash = RotatingScalingSprite(
                     random.choice(d['image']),
@@ -359,15 +359,17 @@ while running:
                 scores[current_bus]['biogas'] += d['biogas']
                 scores[current_bus]['digestate'] += d['digestate']
                 flowers[current_bus].grow(d['digestate'] / 1000)
+                current_bus = -1
             elif event.key == pygame.K_ESCAPE:
                 running = False
 
     for bus in all_buses.sprites():
         bus.selected = False
-    buses[current_bus].selected = True
+    if current_bus >= 0:
+        buses[current_bus].selected = True
 
     # show large number for selected bus with fade-out effect
-    if selection_displaying:
+    if selection_displaying and current_bus >= 0:
         elapsed_time = time.time() - selection_start_time
         if elapsed_time < selected_display_time:
             selected_text = font_large.render(str(current_bus + 1), True, white)
