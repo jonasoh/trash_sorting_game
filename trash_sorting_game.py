@@ -100,7 +100,7 @@ substrates = {
     pygame.K_l: {'image': [ls('flowers1.png')], 'biogas': 6040, 'digestate': 70},
     pygame.K_m: {'image': [ls('plastic1.png')], 'biogas': 0, 'digestate': 0},
     pygame.K_n: {'image': [ls('oil1.png')], 'biogas': 32940, 'digestate': 0},
-    # räkskal
+    pygame.K_o: {'image': [ls('shrimp1.png')], 'biogas': 11340, 'digestate': 130},
     pygame.K_p: {
         'image': [ls('paper1.png'), ls('paper2.png')],
         'biogas': 7400,
@@ -126,7 +126,7 @@ substrates = {
 }
 
 km_per_pixel = sum(x['biogas'] for x in substrates.values()) / 1100
-print(km_per_pixel)
+km_per_pixel /= 1.4
 bus_keys = {pygame.K_1: 0, pygame.K_2: 1, pygame.K_3: 2, pygame.K_4: 3}
 scores = {x: {'biogas': 0, 'digestate': 0} for x in range(4)}
 
@@ -145,7 +145,6 @@ class Bus(pygame.sprite.Sprite):
         self.selected = False
 
     def move(self, distance):
-        print('moving to', self.target_x)
         self.target_x += distance
         # Calculate the movement per frame based on a fixed speed, considering the direction
         self.movement_per_frame = (
@@ -180,7 +179,7 @@ class Flower(pygame.sprite.Sprite):
         self.scale = 1
 
     def grow(self, delta):
-        self.scale += delta
+        self.scale += delta * 1.2
 
     def reset(self):
         self.scale = 1
@@ -338,7 +337,11 @@ while running:
         if event.type == pygame.QUIT:
             running = False
         elif event.type == pygame.KEYDOWN:
-            if event.key in bus_keys:
+            if event.key == pygame.K_f and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                pygame.display.toggle_fullscreen()
+            elif event.key == pygame.K_r and pygame.key.get_mods() & pygame.KMOD_CTRL:
+                reset()
+            elif event.key in bus_keys:
                 current_bus = bus_keys[event.key]
                 selection_start_time = time.time()
                 selection_displaying = True
@@ -358,10 +361,6 @@ while running:
                 flowers[current_bus].grow(d['digestate'] / 1000)
             elif event.key == pygame.K_ESCAPE:
                 running = False
-            elif event.key == pygame.K_f and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                pygame.display.toggle_fullscreen()
-            elif event.key == pygame.K_r and pygame.key.get_mods() & pygame.KMOD_CTRL:
-                reset()
 
     for bus in all_buses.sprites():
         bus.selected = False
